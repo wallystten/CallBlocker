@@ -1,18 +1,19 @@
-plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     namespace "com.seupacote.callblocker"
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.seupacote.callblocker"
+        // 🔥 applicationId alterado para forçar atualização do ícone
+        applicationId "com.seupacote.callblocker.app"
+
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+
+        versionCode 2
+        versionName "1.1"
     }
 
     buildTypes {
@@ -21,8 +22,9 @@ android {
         }
         release {
             minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile(
+                'proguard-android-optimize.txt'
+            ), 'proguard-rules.pro'
         }
     }
 
