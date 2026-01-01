@@ -1,8 +1,8 @@
 package com.seupacote.callblocker.service
 
+import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallScreeningService
-import com.seupacote.callblocker.utils.BlockList
 
 class CallBlockService : CallScreeningService() {
 
@@ -10,20 +10,42 @@ class CallBlockService : CallScreeningService() {
 
         val number = callDetails.handle?.schemeSpecificPart
 
-        val responseBuilder = CallResponse.Builder()
+        val isSavedContact = isNumberInContacts(number)
 
-        if (BlockList.isBlocked(number)) {
-            // BLOQUEIA A CHAMADA
-            responseBuilder
+        val response = CallResponse.Builder()
+
+        if (!isSavedContact) {
+            // 🔴 BLOQUEIA TUDO QUE NÃO ESTÁ NA AGENDA
+            response
                 .setDisallowCall(true)
                 .setRejectCall(true)
                 .setSkipCallLog(false)
                 .setSkipNotification(true)
         } else {
-            // PERMITE A CHAMADA
-            responseBuilder.setDisallowCall(false)
+            // 🟢 PERMITE CONTATOS SALVOS
+            response.setDisallowCall(false)
         }
 
-        respondToCall(callDetails, responseBuilder.build())
+        respondToCall(callDetails, response.build())
+    }
+
+    private fun isNumberInContacts(number: String?): Boolean {
+        if (number.isNullOrBlank()) return false
+
+        val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+            .appendPath(number)
+            .build()
+
+        contentResolver.query(
+            uri,
+            arrayOf(ContactsContract.PhoneLookup._ID),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            return cursor.moveToFirst()
+        }
+
+        return false
     }
 }
