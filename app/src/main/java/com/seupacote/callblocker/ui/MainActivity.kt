@@ -1,109 +1,75 @@
-package com.seupacote.callblocker.ui
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-import android.app.role.RoleManager
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.provider.Settings
-import android.widget.Button
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.seupacote.callblocker.R
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-class MainActivity : AppCompatActivity() {
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status da Proteção"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        <TextView
+            android:id="@+id/txtSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ative as opções abaixo para garantir o bloqueio correto de chamadas indesejadas."
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
 
-        // 🔐 Conceder permissões do app (contatos, telefone etc.)
-        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            openAppSettings()
-        }
+        <TextView
+            android:id="@+id/txtContactsStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="❌ Acesso aos contatos"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
-        // 📞 Ativar filtro de chamadas (TELA QUE VOCÊ QUER)
-        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openCallScreeningSelector()
-        }
+        <TextView
+            android:id="@+id/txtCallFilterStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ Filtro de chamadas não ativado"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
-        // 🚀 Inicialização automática (configuração do sistema)
-        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openGeneralSettings()
-        }
+        <TextView
+            android:id="@+id/txtBatteryStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ Otimização de bateria pode interferir"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp" />
 
-        // 🔋 Ignorar otimização de bateria
-        findViewById<Button>(R.id.btnBattery).setOnClickListener {
-            openBatterySettings()
-        }
-    }
+        <Button
+            android:id="@+id/btnContacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Conceder acesso aos contatos" />
 
-    // 🔐 Abre diretamente a tela do app para permissões
-    private fun openAppSettings() {
-        try {
-            val intent = Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Não foi possível abrir as permissões do app",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+        <Button
+            android:id="@+id/btnCallFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ativar filtro de chamadas"
+            android:layout_marginTop="12dp" />
 
-    // 📞 Abre a TELA OFICIAL de seleção de filtro de chamadas (RoleManager)
-    private fun openCallScreeningSelector() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        <Button
+            android:id="@+id/btnBattery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ajustar bateria"
+            android:layout_marginTop="12dp" />
 
-            val roleManager = getSystemService(RoleManager::class.java)
+    </LinearLayout>
 
-            if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) {
-
-                if (!roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
-
-                    val intent = roleManager.createRequestRoleIntent(
-                        RoleManager.ROLE_CALL_SCREENING
-                    )
-                    startActivity(intent)
-
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Call Blocker já está definido como filtro padrão",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-            } else {
-                Toast.makeText(
-                    this,
-                    "Seu dispositivo não suporta filtro de chamadas",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-        } else {
-            Toast.makeText(
-                this,
-                "Recurso disponível apenas no Android 10 ou superior",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    // ⚙️ Configurações gerais do sistema
-    private fun openGeneralSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
-    }
-
-    // 🔋 Tela de otimização de bateria
-    private fun openBatterySettings() {
-        startActivity(
-            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-        )
-    }
-}
+</ScrollView>
