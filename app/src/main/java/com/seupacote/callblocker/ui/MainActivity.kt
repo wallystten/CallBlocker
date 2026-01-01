@@ -1,4 +1,4 @@
-package com.seupacote.callblocker.ui
+package com.seupacote.callblocker.package com.seupacote.callblocker.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,21 +13,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnEnable = findViewById<Button>(R.id.btnEnable)
+        val btnEnable = findViewById<Button>(R.id.btnEnableCallScreening)
 
         btnEnable.setOnClickListener {
-            openCallScreeningSettings()
+            openCallSettings()
         }
     }
 
-    private fun openCallScreeningSettings() {
-        try {
-            // Tela correta para apps de bloqueio de chamadas
-            val intent = Intent(Settings.ACTION_CALL_SCREENING_SETTINGS)
-            startActivity(intent)
-        } catch (e: Exception) {
-            // Fallback caso o Android não suporte
-            startActivity(Intent(Settings.ACTION_SETTINGS))
-        }
+    private fun openCallSettings() {
+        // Intent compatível com TODOS os Androids
+        val intent = Intent(Settings.ACTION_SETTINGS)
+        startActivity(intent)
     }
 }
