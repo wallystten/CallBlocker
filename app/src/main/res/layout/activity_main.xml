@@ -1,79 +1,144 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+package com.seupacote.callblocker.ui
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+import android.Manifest
+import android.app.role.RoleManager
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.seupacote.callblocker.R
 
-        <!-- TÍTULO -->
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🛡️ Status da Proteção"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+class MainActivity : AppCompatActivity() {
 
-        <!-- SUBTÍTULO -->
-        <TextView
-            android:id="@+id/txtSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ative as opções abaixo para garantir o bloqueio total de chamadas indesejadas."
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp" />
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        <!-- STATUS -->
-        <TextView
-            android:id="@+id/txtContactsStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="❌ Acesso aos contatos"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+        val txtContactsStatus = findViewById<TextView>(R.id.txtContactsStatus)
+        val txtCallFilterStatus = findViewById<TextView>(R.id.txtCallFilterStatus)
+        val txtBatteryStatus = findViewById<TextView>(R.id.txtBatteryStatus)
 
-        <TextView
-            android:id="@+id/txtCallFilterStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚠️ Filtro de chamadas não ativado"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+        val btnContacts = findViewById<Button>(R.id.btnContacts)
+        val btnCallFilter = findViewById<Button>(R.id.btnCallFilter)
+        val btnBattery = findViewById<Button>(R.id.btnBattery)
 
-        <TextView
-            android:id="@+id/txtBatteryStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚠️ Otimização de bateria pode interferir"
-            android:textSize="16sp"
-            android:layout_marginBottom="24dp" />
+        // 🔄 Atualiza status ao abrir
+        updateContactsStatus(txtContactsStatus)
+        updateCallFilterStatus(txtCallFilterStatus)
+        updateBatteryStatus(txtBatteryStatus)
 
-        <!-- BOTÕES -->
-        <Button
-            android:id="@+id/btnContacts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Conceder acesso aos contatos" />
+        // 🔐 Permissão de contatos
+        btnContacts.setOnClickListener {
+            requestContactsPermission()
+        }
 
-        <Button
-            android:id="@+id/btnCallFilter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ativar filtro de chamadas"
-            android:layout_marginTop="12dp" />
+        // 📞 Ativar filtro de chamadas
+        btnCallFilter.setOnClickListener {
+            openCallScreeningSelector()
+        }
 
-        <Button
-            android:id="@+id/btnBattery"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ajustar bateria"
-            android:layout_marginTop="12dp" />
+        // 🔋 Ajustar bateria
+        btnBattery.setOnClickListener {
+            openBatterySettings()
+        }
+    }
 
-    </LinearLayout>
+    // ================= STATUS =================
 
-</ScrollView>
+    private fun updateContactsStatus(textView: TextView) {
+        val granted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_CONTACTS
+        ) == PackageManager.PERMISSION_GRANTED
+
+        textView.text = if (granted) {
+            "✅ Acesso aos contatos concedido"
+        } else {
+            "❌ Acesso aos contatos"
+        }
+    }
+
+    private fun updateCallFilterStatus(textView: TextView) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+            val active = roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)
+
+            textView.text = if (active) {
+                "✅ Filtro de chamadas ativo"
+            } else {
+                "⚠️ Filtro de chamadas não ativado"
+            }
+        } else {
+            textView.text = "⚠️ Filtro de chamadas não suportado"
+        }
+    }
+
+    private fun updateBatteryStatus(textView: TextView) {
+        textView.text = "⚠️ Otimização de bateria pode interferir"
+    }
+
+    // ================= AÇÕES =================
+
+    private fun requestContactsPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                1001
+            )
+        } else {
+            Toast.makeText(this, "Permissão já concedida", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openCallScreeningSelector() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+
+            if (!roleManager.isRoleHeld(RoleManager.ROLE_CALL_SCREENING)) {
+                val intent = roleManager.createRequestRoleIntent(
+                    RoleManager.ROLE_CALL_SCREENING
+                )
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Call Blocker já está ativo como filtro",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun openBatterySettings() {
+        startActivity(
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        )
+    }
+
+    // ================= CALLBACK =================
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1001) {
+            val txtContactsStatus = findViewById<TextView>(R.id.txtContactsStatus)
+            updateContactsStatus(txtContactsStatus)
+        }
+    }
+}
