@@ -1,111 +1,75 @@
 package com.seupacote.callblocker.ui
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
+import com.seupacote.callblocker.util.TrialManager
 
 class MainActivity : AppCompatActivity() {
-
-    private val REQUEST_CONTACTS = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔐 Conceder permissões
-        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            handlePermissionsFlow()
+        val btnPermissions = findViewById<Button>(R.id.btnPermissions)
+        val btnCallFilter = findViewById<Button>(R.id.btnCallFilter)
+        val btnAutostart = findViewById<Button>(R.id.btnAutostart)
+        val btnBattery = findViewById<Button>(R.id.btnBattery)
+        val btnWhatsapp = findViewById<Button>(R.id.btnWhatsapp)
+
+        btnPermissions.setOnClickListener {
+            openAppSettings()
         }
 
-        // 📞 Ativar filtro de chamadas
-        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openCallScreeningInstructions()
+        btnCallFilter.setOnClickListener {
+            openCallScreeningSettings()
         }
 
-        // 🔄 Inicialização automática
-        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+        btnAutostart.setOnClickListener {
             openGeneralSettings()
         }
 
-        // 🔋 Ignorar otimização de bateria
-        findViewById<Button>(R.id.btnBattery).setOnClickListener {
+        btnBattery.setOnClickListener {
             openBatterySettings()
         }
 
-        // 💬 WhatsApp
-        findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
+        btnWhatsapp.setOnClickListener {
             openWhatsapp()
         }
+
+        // 🔑 VERIFICA TRIAL
+        if (!TrialManager.isTrialActive(this)) {
+            showTrialExpiredDialog()
+            btnWhatsapp.visibility = Button.VISIBLE
+        }
     }
 
-    /**
-     * Fluxo inteligente de permissões
-     */
-    private fun handlePermissionsFlow() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // 🔵 POPUP AUTOMÁTICO DE CONTATOS
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                REQUEST_CONTACTS
+    private fun showTrialExpiredDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Teste gratuito finalizado")
+            .setMessage(
+                "Seu teste gratuito de 7 dias terminou.\n\n" +
+                "Para continuar bloqueando chamadas desconhecidas, ative o plano Premium."
             )
-        } else {
-            // Já concedido → abre configurações do app
-            openAppSettings()
-        }
-    }
-
-    /**
-     * Retorno do popup de permissões
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == REQUEST_CONTACTS) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(
-                    this,
-                    "Permissão concedida. Agora ative o filtro de chamadas.",
-                    Toast.LENGTH_LONG
-                ).show()
-                openAppSettings()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Sem acesso aos contatos o bloqueio não funciona.",
-                    Toast.LENGTH_LONG
-                ).show()
+            .setPositiveButton("Ativar Premium") { _, _ ->
+                openWhatsapp()
             }
-        }
+            .setNegativeButton("Agora não", null)
+            .show()
     }
 
-    /**
-     * Instruções para ativar triagem de chamadas
-     */
-    private fun openCallScreeningInstructions() {
-        openGeneralSettings()
-        Toast.makeText(
-            this,
-            "Vá em Apps padrão > App de triagem de chamadas > Call Blocker",
-            Toast.LENGTH_LONG
-        ).show()
+    private fun openWhatsapp() {
+        val phone = "5547988818203"
+        val message = "Olá! Quero ativar o Premium do Call Blocker."
+        val uri = Uri.parse(
+            "https://wa.me/$phone?text=${Uri.encode(message)}"
+        )
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
     private fun openAppSettings() {
@@ -114,19 +78,15 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun openCallScreeningSettings() {
+        startActivity(Intent(Settings.ACTION_CALL_SCREENING_SETTINGS))
+    }
+
     private fun openGeneralSettings() {
         startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
     private fun openBatterySettings() {
         startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-    }
-
-    private fun openWhatsapp() {
-        val phone = "5547988818203"
-        val message = "Olá, quero suporte / ativação do Call Blocker"
-        val url =
-            "https://wa.me/$phone?text=${java.net.URLEncoder.encode(message, "UTF-8")}"
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }
