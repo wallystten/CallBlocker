@@ -5,7 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.seupacote.callblocker.R
 import com.seupacote.callblocker.util.TrialManager
@@ -22,64 +22,43 @@ class MainActivity : AppCompatActivity() {
         val btnBattery = findViewById<Button>(R.id.btnBattery)
         val btnWhatsapp = findViewById<Button>(R.id.btnWhatsapp)
 
+        // 🔐 Permissões
         btnPermissions.setOnClickListener {
             openAppSettings()
         }
 
+        // 📞 Filtro de chamadas (abre config do app – caminho correto)
         btnCallFilter.setOnClickListener {
-            openCallScreeningSettings()
+            openAppSettings()
         }
 
+        // 🚀 Autostart
         btnAutostart.setOnClickListener {
             openGeneralSettings()
         }
 
+        // 🔋 Bateria
         btnBattery.setOnClickListener {
             openBatterySettings()
         }
 
-        btnWhatsapp.setOnClickListener {
-            openWhatsapp()
-        }
-
-        // 🔑 VERIFICA TRIAL
+        // 💬 WhatsApp (apenas se trial acabou)
         if (!TrialManager.isTrialActive(this)) {
-            showTrialExpiredDialog()
             btnWhatsapp.visibility = Button.VISIBLE
-        }
-    }
-
-    private fun showTrialExpiredDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Teste gratuito finalizado")
-            .setMessage(
-                "Seu teste gratuito de 7 dias terminou.\n\n" +
-                "Para continuar bloqueando chamadas desconhecidas, ative o plano Premium."
-            )
-            .setPositiveButton("Ativar Premium") { _, _ ->
+            btnWhatsapp.setOnClickListener {
                 openWhatsapp()
             }
-            .setNegativeButton("Agora não", null)
-            .show()
-    }
-
-    private fun openWhatsapp() {
-        val phone = "5547988818203"
-        val message = "Olá! Quero ativar o Premium do Call Blocker."
-        val uri = Uri.parse(
-            "https://wa.me/$phone?text=${Uri.encode(message)}"
-        )
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
+        }
     }
 
     private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
-    }
-
-    private fun openCallScreeningSettings() {
-        startActivity(Intent(Settings.ACTION_CALL_SCREENING_SETTINGS))
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Não foi possível abrir as configurações", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openGeneralSettings() {
@@ -88,5 +67,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun openBatterySettings() {
         startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    }
+
+    private fun openWhatsapp() {
+        val number = "5547988818203"
+        val url = "https://wa.me/$number"
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }
