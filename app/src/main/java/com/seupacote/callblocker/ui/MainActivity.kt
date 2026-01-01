@@ -20,15 +20,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openCallScreeningSettings()
+            openGeneralSettings()
         }
 
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
+            openGeneralSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            openBatterySettings()
         }
     }
 
@@ -42,16 +42,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openCallScreeningSettings() {
-        try {
-            // Intent OFICIAL para triagem de chamadas
-            startActivity(Intent(Settings.ACTION_CALL_SCREENING_SETTINGS))
-        } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Abra manualmente: Configurações > Apps > Apps padrão > Triagem de chamadas",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+    private fun openGeneralSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
+    }
+
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 }
