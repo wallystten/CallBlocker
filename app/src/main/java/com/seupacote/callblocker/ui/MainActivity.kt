@@ -5,10 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.seupacote.callblocker.R
 import com.seupacote.callblocker.util.TrialManager
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,57 +17,53 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnPermissions = findViewById<Button>(R.id.btnPermissions)
-        val btnCallFilter = findViewById<Button>(R.id.btnCallFilter)
-        val btnAutostart = findViewById<Button>(R.id.btnAutostart)
-        val btnBattery = findViewById<Button>(R.id.btnBattery)
+        val txtStatusTitle = findViewById<TextView>(R.id.txtStatusTitle)
+        val txtStatusSubtitle = findViewById<TextView>(R.id.txtStatusSubtitle)
+        val txtTrial = findViewById<TextView>(R.id.txtTrial)
         val btnWhatsapp = findViewById<Button>(R.id.btnWhatsapp)
 
-        // 🔐 Permissões
-        btnPermissions.setOnClickListener {
-            openAppSettings()
-        }
+        // STATUS DO TRIAL
+        if (TrialManager.isTrialActive(this)) {
+            val daysLeft = TrialManager.getDaysLeft(this)
 
-        // 📞 Filtro de chamadas (abre config do app – caminho correto)
-        btnCallFilter.setOnClickListener {
-            openAppSettings()
-        }
+            txtStatusTitle.text = "🛡️ Proteção ativa"
+            txtStatusSubtitle.text =
+                "Chamadas desconhecidas estão sendo bloqueadas automaticamente."
+            txtTrial.text = "🎁 Teste gratuito: $daysLeft dias restantes"
+        } else {
+            txtStatusTitle.text = "🔒 Proteção desativada"
+            txtStatusSubtitle.text =
+                "Seu teste gratuito terminou. Ative o Premium para continuar bloqueando chamadas."
+            txtTrial.text = "⛔ Teste gratuito finalizado"
 
-        // 🚀 Autostart
-        btnAutostart.setOnClickListener {
-            openGeneralSettings()
-        }
-
-        // 🔋 Bateria
-        btnBattery.setOnClickListener {
-            openBatterySettings()
-        }
-
-        // 💬 WhatsApp (apenas se trial acabou)
-        if (!TrialManager.isTrialActive(this)) {
             btnWhatsapp.visibility = Button.VISIBLE
             btnWhatsapp.setOnClickListener {
                 openWhatsapp()
             }
         }
-    }
 
-    private fun openAppSettings() {
-        try {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Não foi possível abrir as configurações", Toast.LENGTH_SHORT).show()
+        // BOTÕES
+        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
+            openAppSettings()
+        }
+
+        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
+            openAppSettings()
+        }
+
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
+
+        findViewById<Button>(R.id.btnBattery).setOnClickListener {
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }
     }
 
-    private fun openGeneralSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:$packageName")
+        startActivity(intent)
     }
 
     private fun openWhatsapp() {
