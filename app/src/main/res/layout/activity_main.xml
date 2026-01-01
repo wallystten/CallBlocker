@@ -41,5 +41,12 @@
         android:text="Ignorar otimização de bateria"
         android:layout_marginTop="12dp"/>
 
+    <!-- 💬 BOTÃO WHATSAPP -->
+    <Button
+        android:id="@+id/btnWhatsapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Falar no WhatsApp"
+        android:layout_marginTop="24dp"/>
+
 </LinearLayout>
-  
