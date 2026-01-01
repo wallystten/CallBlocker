@@ -9,66 +9,71 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- STATUS -->
+        <!-- TÍTULO -->
         <TextView
-            android:id="@+id/txtStatusTitle"
+            android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🛡️ Proteção ativa"
+            android:text="🛡️ Status da Proteção"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="6dp"/>
+            android:layout_marginBottom="8dp" />
 
+        <!-- SUBTÍTULO -->
         <TextView
-            android:id="@+id/txtStatusSubtitle"
+            android:id="@+id/txtSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chamadas desconhecidas estão sendo bloqueadas automaticamente."
-            android:layout_marginBottom="16dp"/>
+            android:text="Ative as opções abaixo para garantir o bloqueio total de chamadas indesejadas."
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
 
+        <!-- STATUS -->
         <TextView
-            android:id="@+id/txtTrial"
+            android:id="@+id/txtContactsStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🎁 Teste gratuito: 7 dias restantes"
-            android:layout_marginBottom="24dp"/>
+            android:text="❌ Acesso aos contatos"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
-        <!-- AÇÕES -->
+        <TextView
+            android:id="@+id/txtCallFilterStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ Filtro de chamadas não ativado"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/txtBatteryStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️ Otimização de bateria pode interferir"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- BOTÕES -->
         <Button
-            android:id="@+id/btnPermissions"
+            android:id="@+id/btnContacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Conceder permissões" />
+            android:text="Conceder acesso aos contatos" />
 
         <Button
             android:id="@+id/btnCallFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ativar filtro de chamadas"
-            android:layout_marginTop="12dp"/>
-
-        <Button
-            android:id="@+id/btnAutostart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Inicialização automática"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="12dp" />
 
         <Button
             android:id="@+id/btnBattery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ignorar otimização de bateria"
-            android:layout_marginTop="12dp"/>
-
-        <!-- WHATSAPP -->
-        <Button
-            android:id="@+id/btnWhatsapp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="💬 Ativar Premium no WhatsApp"
-            android:layout_marginTop="24dp"
-            android:visibility="gone"/>
+            android:text="Ajustar bateria"
+            android:layout_marginTop="12dp" />
 
     </LinearLayout>
+
 </ScrollView>
