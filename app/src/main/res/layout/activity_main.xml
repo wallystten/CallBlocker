@@ -1,66 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:layout_height="match_parent">
 
-    <!-- TÍTULO -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Call Blocker"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-
-    <!-- SUBTÍTULO -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🎁 Teste grátis por 7 dias\nBloqueio automático de chamadas desconhecidas"
-        android:textAlignment="center"
-        android:layout_marginBottom="24dp"/>
-
-    <!-- BOTÃO 1: PERMISSÕES -->
-    <Button
-        android:id="@+id/btnPermissions"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1️⃣ Conceder permissões" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <!-- BOTÃO 2: FILTRO DE CHAMADAS -->
-    <Button
-        android:id="@+id/btnCallFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="2️⃣ Ativar filtro de chamadas"
-        android:layout_marginTop="12dp"/>
+        <!-- STATUS -->
+        <TextView
+            android:id="@+id/txtStatusTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🛡️ Proteção ativa"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp"/>
 
-    <!-- BOTÃO 3: AUTOSTART -->
-    <Button
-        android:id="@+id/btnAutostart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="3️⃣ Inicialização automática"
-        android:layout_marginTop="12dp"/>
+        <TextView
+            android:id="@+id/txtStatusSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chamadas desconhecidas estão sendo bloqueadas automaticamente."
+            android:layout_marginBottom="16dp"/>
 
-    <!-- BOTÃO 4: BATERIA -->
-    <Button
-        android:id="@+id/btnBattery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="4️⃣ Ignorar otimização de bateria"
-        android:layout_marginTop="12dp"/>
+        <TextView
+            android:id="@+id/txtTrial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎁 Teste gratuito: 7 dias restantes"
+            android:layout_marginBottom="24dp"/>
 
-    <!-- BOTÃO WHATSAPP (SÓ APARECE APÓS O TRIAL) -->
-    <Button
-        android:id="@+id/btnWhatsapp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="💬 Ativar Premium no WhatsApp"
-        android:layout_marginTop="24dp"
-        android:visibility="gone"/>
+        <!-- AÇÕES -->
+        <Button
+            android:id="@+id/btnPermissions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Conceder permissões" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnCallFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ativar filtro de chamadas"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/btnAutostart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Inicialização automática"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/btnBattery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ignorar otimização de bateria"
+            android:layout_marginTop="12dp"/>
+
+        <!-- WHATSAPP -->
+        <Button
+            android:id="@+id/btnWhatsapp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💬 Ativar Premium no WhatsApp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+</ScrollView>
