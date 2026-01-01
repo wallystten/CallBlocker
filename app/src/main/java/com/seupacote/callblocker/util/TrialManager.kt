@@ -1,30 +1,37 @@
 package com.seupacote.callblocker.util
 
 import android.content.Context
-import java.util.concurrent.TimeUnit
 
 object TrialManager {
 
-    private const val PREFS_NAME = "call_blocker_prefs"
-    private const val KEY_INSTALL_TIME = "install_time"
+    private const val PREFS_NAME = "trial_prefs"
+    private const val KEY_FIRST_LAUNCH = "first_launch"
     private const val TRIAL_DAYS = 7L
 
     fun isTrialActive(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        val installTime = prefs.getLong(KEY_INSTALL_TIME, 0L)
+        val firstLaunch = prefs.getLong(KEY_FIRST_LAUNCH, 0L)
 
-        if (installTime == 0L) {
-            // Primeira execução
-            prefs.edit()
-                .putLong(KEY_INSTALL_TIME, System.currentTimeMillis())
-                .apply()
+        val now = System.currentTimeMillis()
+
+        // Primeira execução do app
+        if (firstLaunch == 0L) {
+            prefs.edit().putLong(KEY_FIRST_LAUNCH, now).apply()
             return true
         }
 
-        val now = System.currentTimeMillis()
-        val diffDays = TimeUnit.MILLISECONDS.toDays(now - installTime)
+        val daysPassed =
+            (now - firstLaunch) / (1000 * 60 * 60 * 24)
 
-        return diffDays < TRIAL_DAYS
+        return daysPassed < TRIAL_DAYS
+    }
+
+    // (opcional – só para testes)
+    fun resetTrial(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
     }
 }
