@@ -1,4 +1,4 @@
-package com.seupacote.callblocker.package com.seupacote.callblocker.ui
+package com.seupacote.callblocker.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,16 +13,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnEnable = findViewById<Button>(R.id.btnEnableCallScreening)
+        val btnPermissions = findViewById<Button>(R.id.btnPermissions)
+        val btnCallFilter = findViewById<Button>(R.id.btnCallFilter)
+        val btnAutostart = findViewById<Button>(R.id.btnAutostart)
+        val btnBattery = findViewById<Button>(R.id.btnBattery)
 
-        btnEnable.setOnClickListener {
-            openCallSettings()
+        btnPermissions.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS))
         }
-    }
 
-    private fun openCallSettings() {
-        // Intent compatível com TODOS os Androids
-        val intent = Intent(Settings.ACTION_SETTINGS)
-        startActivity(intent)
+        btnCallFilter.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_CALL_SCREENING_SETTINGS))
+        }
+
+        btnAutostart.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
+
+        btnBattery.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+        }
     }
 }
