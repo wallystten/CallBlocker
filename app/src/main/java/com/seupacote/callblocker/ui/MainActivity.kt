@@ -23,7 +23,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnCallFilter.setOnClickListener {
-            startActivity(Intent(Settings.ACTION_CALL_SCREENING_SETTINGS))
+            val intent = Intent("android.telecom.action.CHANGE_DEFAULT_DIALER")
+            intent.putExtra(
+                "android.telecom.extra.CHANGE_DEFAULT_DIALER_PACKAGE_NAME",
+                packageName
+            )
+            startActivity(intent)
         }
 
         btnAutostart.setOnClickListener {
