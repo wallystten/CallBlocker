@@ -3,6 +3,8 @@ package com.seupacote.callblocker.service
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import android.telecom.CallScreeningService.CallResponse
+import com.seupacote.callblocker.util.TrialManager
 
 class CallBlockService : CallScreeningService() {
 
@@ -10,19 +12,28 @@ class CallBlockService : CallScreeningService() {
 
         val number = callDetails.handle?.schemeSpecificPart
 
+        // 🔑 VERIFICA SE O TRIAL AINDA ESTÁ ATIVO
+        val isTrialActive = TrialManager.isTrialActive(this)
+
+        if (!isTrialActive) {
+            // ⛔ Trial acabou → NÃO bloqueia nada
+            respondToCall(callDetails, CallResponse.Builder().build())
+            return
+        }
+
         val isSavedContact = isNumberInContacts(number)
 
         val response = CallResponse.Builder()
 
         if (!isSavedContact) {
-            // 🔴 BLOQUEIA TUDO QUE NÃO ESTÁ NA AGENDA
+            // 🔴 TRIAL ATIVO → BLOQUEIA NÚMEROS NÃO SALVOS
             response
                 .setDisallowCall(true)
                 .setRejectCall(true)
                 .setSkipCallLog(false)
                 .setSkipNotification(true)
         } else {
-            // 🟢 PERMITE CONTATOS SALVOS
+            // 🟢 CONTATO SALVO → PERMITE
             response.setDisallowCall(false)
         }
 
