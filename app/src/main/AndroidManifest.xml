@@ -4,6 +4,7 @@
     <!-- 🔐 Permissões necessárias -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_SCREENING" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +24,7 @@
 
         </activity>
 
-        <!-- 🔒 Serviço de bloqueio de chamadas -->
+        <!-- 🔒 Serviço de triagem / bloqueio de chamadas -->
         <service
             android:name=".service.CallBlockService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
