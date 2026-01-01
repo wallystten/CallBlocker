@@ -1,75 +1,116 @@
 package com.seupacote.callblocker.ui
 
+import android.Manifest
+import android.app.role.RoleManager
 import android.content.Intent
-import android.net.Uri
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
-import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
-import com.seupacote.callblocker.util.TrialManager
-import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
+
+    // 🔐 Launcher para permissões
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted) {
+                Toast.makeText(
+                    this,
+                    "Permissão necessária para o funcionamento do app",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val txtStatusTitle = findViewById<TextView>(R.id.txtStatusTitle)
-        val txtStatusSubtitle = findViewById<TextView>(R.id.txtStatusSubtitle)
-        val txtTrial = findViewById<TextView>(R.id.txtTrial)
-        val btnWhatsapp = findViewById<Button>(R.id.btnWhatsapp)
-
-        // STATUS DO TRIAL
-        if (TrialManager.isTrialActive(this)) {
-            val daysLeft = TrialManager.getDaysLeft(this)
-
-            txtStatusTitle.text = "🛡️ Proteção ativa"
-            txtStatusSubtitle.text =
-                "Chamadas desconhecidas estão sendo bloqueadas automaticamente."
-            txtTrial.text = "🎁 Teste gratuito: $daysLeft dias restantes"
-        } else {
-            txtStatusTitle.text = "🔒 Proteção desativada"
-            txtStatusSubtitle.text =
-                "Seu teste gratuito terminou. Ative o Premium para continuar bloqueando chamadas."
-            txtTrial.text = "⛔ Teste gratuito finalizado"
-
-            btnWhatsapp.visibility = Button.VISIBLE
-            btnWhatsapp.setOnClickListener {
-                openWhatsapp()
-            }
-        }
-
-        // BOTÕES
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            openAppSettings()
+            requestPermissionsFlow()
         }
 
         findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openAppSettings()
+            openCallScreeningRole()
         }
 
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
+            openAutoStartSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            openBatterySettings()
         }
     }
 
-    private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
+    // 🔑 FLUXO DE PERMISSÕES (POP-UPS NATIVOS)
+    private fun requestPermissionsFlow() {
+
+        // 1️⃣ CONTATOS
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            return
+        }
+
+        // 2️⃣ NOTIFICAÇÕES (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                return
+            }
+        }
+
+        Toast.makeText(this, "Permissões concedidas com sucesso ✅", Toast.LENGTH_SHORT).show()
     }
 
-    private fun openWhatsapp() {
-        val number = "5547988818203"
-        val url = "https://wa.me/$number"
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    // 📞 DEFINIR COMO APP PADRÃO DE BLOQUEIO
+    private fun openCallScreeningRole() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = getSystemService(RoleManager::class.java)
+
+            if (roleManager.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING)) {
+                val intent = roleManager.createRequestRoleIntent(
+                    RoleManager.ROLE_CALL_SCREENING
+                )
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Recurso não disponível neste dispositivo",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    // 🔋 Ignorar otimização de bateria
+    private fun openBatterySettings() {
+        startActivity(
+            Intent(
+                android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+            )
+        )
+    }
+
+    // 🚀 Inicialização automática (genérico)
+    private fun openAutoStartSettings() {
+        startActivity(
+            Intent(
+                android.provider.Settings.ACTION_SETTINGS
+            )
+        )
     }
 }
-  
