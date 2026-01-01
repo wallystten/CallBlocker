@@ -1,75 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+package com.seupacote.callblocker.ui
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.seupacote.callblocker.R
 
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status da Proteção"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+class MainActivity : AppCompatActivity() {
 
-        <TextView
-            android:id="@+id/txtSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ative as opções abaixo para garantir o bloqueio correto de chamadas indesejadas."
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp" />
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        <TextView
-            android:id="@+id/txtContactsStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="❌ Acesso aos contatos"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
+            openAppPermissions()
+        }
 
-        <TextView
-            android:id="@+id/txtCallFilterStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚠️ Filtro de chamadas não ativado"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
+            openCallScreeningSettings()
+        }
 
-        <TextView
-            android:id="@+id/txtBatteryStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚠️ Otimização de bateria pode interferir"
-            android:textSize="16sp"
-            android:layout_marginBottom="24dp" />
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            openGeneralSettings()
+        }
 
-        <Button
-            android:id="@+id/btnContacts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Conceder acesso aos contatos" />
+        findViewById<Button>(R.id.btnBattery).setOnClickListener {
+            openBatterySettings()
+        }
 
-        <Button
-            android:id="@+id/btnCallFilter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ativar filtro de chamadas"
-            android:layout_marginTop="12dp" />
+        findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
+            openWhatsApp()
+        }
+    }
 
-        <Button
-            android:id="@+id/btnBattery"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ajustar bateria"
-            android:layout_marginTop="12dp" />
+    /** 🔐 Abre permissões do app (Android 9–15) */
+    private fun openAppPermissions() {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Não foi possível abrir permissões", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-    </LinearLayout>
+    /** 📞 Abre tela correta para definir app como identificador/filtro de chamadas */
+    private fun openCallScreeningSettings() {
+        try {
+            val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Abra Configurações > Apps padrão", Toast.LENGTH_LONG).show()
+        }
+    }
 
-</ScrollView>
+    /** ⚙️ Configurações gerais (autostart varia por fabricante) */
+    private fun openGeneralSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
+    }
+
+    /** 🔋 Ignorar otimização de bateria */
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    }
+
+    /** 💬 WhatsApp suporte */
+    private fun openWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
+}
