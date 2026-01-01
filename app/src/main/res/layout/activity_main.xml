@@ -14,17 +14,14 @@
         android:textStyle="bold"
         android:layout_marginBottom="24dp"/>
 
+    <!-- 🔐 BOTÃO QUE ABRE AS PERMISSÕES DE BLOQUEIO -->
     <Button
+        android:id="@+id/btnEnableCallScreening"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conceder permissões" />
+        android:text="Ativar bloqueio de chamadas" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ativar filtro de chamadas"
-        android:layout_marginTop="12dp"/>
-
+    <!-- (opcionais, ainda sem código) -->
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
