@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.seupacote.callblocker.R
+import java.net.URLEncoder
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,20 +16,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 🔐 Permissões do app
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
             openAppSettings()
         }
 
+        // 📞 Filtro de chamadas (instrução manual)
         findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
             openGeneralSettings()
+            Toast.makeText(
+                this,
+                "Vá em Apps padrão > App de triagem de chamadas > Call Blocker",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
+        // 🔄 Inicialização automática
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
             openGeneralSettings()
         }
 
+        // 🔋 Ignorar otimização de bateria
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
             openBatterySettings()
+        }
+
+        // 💬 WhatsApp (SUPORTE / MONETIZAÇÃO)
+        findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
+            openWhatsapp()
         }
     }
 
@@ -48,5 +63,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun openBatterySettings() {
         startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    }
+
+    private fun openWhatsapp() {
+        try {
+            val phone = "5547988818203" // SEU NÚMERO
+            val message = "Olá, quero suporte / ativação do Call Blocker"
+            val encodedMessage = URLEncoder.encode(message, "UTF-8")
+            val url = "https://wa.me/$phone?text=$encodedMessage"
+
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: Exception) {
+            Toast.makeText(this, "WhatsApp não encontrado", Toast.LENGTH_SHORT).show()
+        }
     }
 }
