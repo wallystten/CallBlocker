@@ -1,34 +1,34 @@
 package com.seupacote.callblocker.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
-import java.net.URLEncoder
 
 class MainActivity : AppCompatActivity() {
+
+    private val REQUEST_CONTACTS = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔐 Permissões do app
+        // 🔐 Conceder permissões
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            openAppSettings()
+            handlePermissionsFlow()
         }
 
-        // 📞 Filtro de chamadas (instrução manual)
+        // 📞 Ativar filtro de chamadas
         findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openGeneralSettings()
-            Toast.makeText(
-                this,
-                "Vá em Apps padrão > App de triagem de chamadas > Call Blocker",
-                Toast.LENGTH_LONG
-            ).show()
+            openCallScreeningInstructions()
         }
 
         // 🔄 Inicialização automática
@@ -41,20 +41,77 @@ class MainActivity : AppCompatActivity() {
             openBatterySettings()
         }
 
-        // 💬 WhatsApp (SUPORTE / MONETIZAÇÃO)
+        // 💬 WhatsApp
         findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
             openWhatsapp()
         }
     }
 
-    private fun openAppSettings() {
-        try {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Não foi possível abrir as permissões", Toast.LENGTH_SHORT).show()
+    /**
+     * Fluxo inteligente de permissões
+     */
+    private fun handlePermissionsFlow() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 🔵 POPUP AUTOMÁTICO DE CONTATOS
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                REQUEST_CONTACTS
+            )
+        } else {
+            // Já concedido → abre configurações do app
+            openAppSettings()
         }
+    }
+
+    /**
+     * Retorno do popup de permissões
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_CONTACTS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this,
+                    "Permissão concedida. Agora ative o filtro de chamadas.",
+                    Toast.LENGTH_LONG
+                ).show()
+                openAppSettings()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Sem acesso aos contatos o bloqueio não funciona.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    /**
+     * Instruções para ativar triagem de chamadas
+     */
+    private fun openCallScreeningInstructions() {
+        openGeneralSettings()
+        Toast.makeText(
+            this,
+            "Vá em Apps padrão > App de triagem de chamadas > Call Blocker",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:$packageName")
+        startActivity(intent)
     }
 
     private fun openGeneralSettings() {
@@ -66,15 +123,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openWhatsapp() {
-        try {
-            val phone = "5547988818203" // SEU NÚMERO
-            val message = "Olá, quero suporte / ativação do Call Blocker"
-            val encodedMessage = URLEncoder.encode(message, "UTF-8")
-            val url = "https://wa.me/$phone?text=$encodedMessage"
-
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-        } catch (e: Exception) {
-            Toast.makeText(this, "WhatsApp não encontrado", Toast.LENGTH_SHORT).show()
-        }
+        val phone = "5547988818203"
+        val message = "Olá, quero suporte / ativação do Call Blocker"
+        val url =
+            "https://wa.me/$phone?text=${java.net.URLEncoder.encode(message, "UTF-8")}"
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }
