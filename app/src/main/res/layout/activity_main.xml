@@ -6,47 +6,61 @@
     android:gravity="center"
     android:padding="24dp">
 
+    <!-- TÍTULO -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Call Blocker"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- SUBTÍTULO -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎁 Teste grátis por 7 dias\nBloqueio automático de chamadas desconhecidas"
+        android:textAlignment="center"
         android:layout_marginBottom="24dp"/>
 
+    <!-- BOTÃO 1: PERMISSÕES -->
     <Button
         android:id="@+id/btnPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conceder permissões" />
+        android:text="1️⃣ Conceder permissões" />
 
+    <!-- BOTÃO 2: FILTRO DE CHAMADAS -->
     <Button
         android:id="@+id/btnCallFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ativar filtro de chamadas"
+        android:text="2️⃣ Ativar filtro de chamadas"
         android:layout_marginTop="12dp"/>
 
+    <!-- BOTÃO 3: AUTOSTART -->
     <Button
         android:id="@+id/btnAutostart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Inicialização automática"
+        android:text="3️⃣ Inicialização automática"
         android:layout_marginTop="12dp"/>
 
+    <!-- BOTÃO 4: BATERIA -->
     <Button
         android:id="@+id/btnBattery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ignorar otimização de bateria"
+        android:text="4️⃣ Ignorar otimização de bateria"
         android:layout_marginTop="12dp"/>
 
-    <!-- 💬 BOTÃO WHATSAPP -->
+    <!-- BOTÃO WHATSAPP (SÓ APARECE APÓS O TRIAL) -->
     <Button
         android:id="@+id/btnWhatsapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Falar no WhatsApp"
-        android:layout_marginTop="24dp"/>
+        android:text="💬 Ativar Premium no WhatsApp"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"/>
 
 </LinearLayout>
