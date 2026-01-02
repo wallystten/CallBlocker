@@ -3,14 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Call Blocker"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
 
     <TextView
         android:id="@+id/txtStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: permissões pendentes"
+        android:text="Status: verificando..."
         android:textSize="16sp"
         android:layout_marginBottom="24dp"/>
 
@@ -18,27 +27,20 @@
         android:id="@+id/btnPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conceder permissões" />
-
-    <Button
-        android:id="@+id/btnAutostart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Inicialização automática"
-        android:layout_marginTop="12dp" />
+        android:text="Conceder permissões e ativar filtro"/>
 
     <Button
         android:id="@+id/btnBattery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ignorar otimização de bateria"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"/>
 
     <Button
         android:id="@+id/btnWhatsapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Suporte via WhatsApp"
-        android:layout_marginTop="24dp" />
+        android:layout_marginTop="24dp"/>
 
 </LinearLayout>
