@@ -26,11 +26,7 @@ class MainActivity : AppCompatActivity() {
         txtStatus = findViewById(R.id.txtStatus)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            handlePermissionsFlow()
-        }
-
-        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openGeneralSettings()
+            startPermissionFlow()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -44,8 +40,7 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    private fun handlePermissionsFlow() {
-
+    private fun startPermissionFlow() {
         // 1️⃣ CONTATOS
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -74,26 +69,21 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // 3️⃣ CALL SCREENING (fluxo oficial permitido)
-        openCallScreeningSettings()
+        // 3️⃣ CALL SCREENING (tela correta do sistema)
+        Toast.makeText(
+            this,
+            "Ative o Call Blocker como filtro de chamadas",
+            Toast.LENGTH_LONG
+        ).show()
+
+        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    private fun openCallScreeningSettings() {
+    private fun openBatterySettings() {
         try {
-            Toast.makeText(
-                this,
-                "Selecione o Call Blocker como app de filtro de chamadas",
-                Toast.LENGTH_LONG
-            ).show()
-
-            startActivity(Intent(Settings.ACTION_SETTINGS))
-
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Não foi possível abrir as configurações",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Configuração não disponível", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,14 +91,6 @@ class MainActivity : AppCompatActivity() {
         val phone = "5547988818203"
         val uri = Uri.parse("https://wa.me/$phone")
         startActivity(Intent(Intent.ACTION_VIEW, uri))
-    }
-
-    private fun openGeneralSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     private fun updateStatus() {
@@ -126,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
         txtStatus.text =
             if (contactsGranted && phoneGranted) {
-                "Status: permissões concedidas"
+                "Status: permissões concedidas\nAtive o filtro de chamadas"
             } else {
                 "Status: permissões pendentes"
             }
@@ -141,4 +123,3 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 }
-  
