@@ -1,9 +1,10 @@
 package com.seupacote.callblocker.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.seupacote.callblocker.R
 
@@ -14,18 +15,21 @@ class PremiumActivity : AppCompatActivity() {
         setContentView(R.layout.activity_premium)
 
         val btnSubscribe = findViewById<Button>(R.id.btnSubscribe)
-        val btnBack = findViewById<Button>(R.id.btnBack)
+        val btnWhatsapp = findViewById<Button>(R.id.btnWhatsappPremium)
 
         btnSubscribe.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Pagamento será implementado em breve",
-                Toast.LENGTH_LONG
-            ).show()
+            // Aqui futuramente entra código de ativação
+            openWhatsApp()
         }
 
-        btnBack.setOnClickListener {
-            finish()
+        btnWhatsapp.setOnClickListener {
+            openWhatsApp()
         }
+    }
+
+    private fun openWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 }
