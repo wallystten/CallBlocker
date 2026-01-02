@@ -3,6 +3,7 @@ package com.seupacote.callblocker.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -35,6 +36,10 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
             openBatterySettings()
+        }
+
+        findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
+            openWhatsApp()
         }
 
         updateStatus()
@@ -75,9 +80,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun openCallScreeningSettings() {
         try {
-            val telecomManager =
-                getSystemService(TELECOM_SERVICE) as TelecomManager
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
                 intent.putExtra(
@@ -100,6 +102,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun openWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 
     private fun openGeneralSettings() {
