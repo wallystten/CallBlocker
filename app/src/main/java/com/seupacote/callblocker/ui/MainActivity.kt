@@ -3,14 +3,13 @@ package com.seupacote.callblocker.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.telecom.TelecomManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -31,8 +30,8 @@ class MainActivity : AppCompatActivity() {
             requestPermissionsFlow()
         }
 
-        findViewById<Button>(R.id.btnCallScreening).setOnClickListener {
-            openCallScreeningSettings()
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            openSystemSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -46,64 +45,82 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
+    // 🔐 Permissões básicas
     private fun requestPermissionsFlow() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_PHONE_STATE
-        )
 
-        val notGranted = permissions.filter {
-            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                100
+            )
+            return
         }
 
-        if (notGranted.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, notGranted.toTypedArray(), 100)
-        } else {
-            Toast.makeText(this, "Permissões já concedidas", Toast.LENGTH_SHORT).show()
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
+                101
+            )
+            return
         }
+
+        showCallScreeningDialog()
+    }
+
+    // 📞 UX correta para ativar Call Screening
+    private fun showCallScreeningDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Ativar filtro de chamadas")
+            .setMessage(
+                "Para o bloqueio funcionar, selecione o Call Blocker como app padrão de identificação de chamadas e spam.\n\n" +
+                        "Toque em \"Configurações\" e escolha Call Blocker."
+            )
+            .setPositiveButton("Configurações") { _, _ ->
+                openCallScreeningSettings()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun openCallScreeningSettings() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                intent.putExtra(
-                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
-                    packageName
-                )
-                startActivity(intent)
+            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                Intent(Settings.ACTION_CALL_SCREENING_SETTINGS)
             } else {
-                openAppSettings()
+                Intent(Settings.ACTION_SETTINGS)
             }
+            startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Abra as configurações e defina o app como identificador de chamadas",
-                Toast.LENGTH_LONG
-            ).show()
-            openAppSettings()
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
-    private fun openBatterySettings() {
-        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-        startActivity(intent)
+    private fun openSystemSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    private fun openAppSettings() {
-        val intent = Intent(
-            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.parse("package:$packageName")
-        )
-        startActivity(intent)
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     private fun openWhatsApp() {
-        val phone = "5547988818203"
-        val uri = Uri.parse("https://wa.me/$phone")
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
+        val uri = Intent(Intent.ACTION_VIEW).apply {
+            data = android.net.Uri.parse("https://wa.me/5547988818203")
+        }
+        startActivity(uri)
     }
 
+    // 📊 Status (Trial / Premium)
     private fun updateStatus() {
         val trialActive = TrialManager.isTrialActive(this)
         val daysLeft = TrialManager.getDaysLeft(this)
@@ -112,16 +129,12 @@ class MainActivity : AppCompatActivity() {
             if (trialActive) {
                 "🆓 Trial ativo\n$daysLeft dia(s) restantes\nBloqueio ativo"
             } else {
-                "⛔ Trial expirado\nAtive o Premium"
+                "🔒 Trial expirado\nAtive o Premium"
             }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    override fun onResume() {
+        super.onResume()
         updateStatus()
     }
 }
