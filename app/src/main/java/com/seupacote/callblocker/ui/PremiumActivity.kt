@@ -14,24 +14,18 @@ class PremiumActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_premium)
 
-        val edtCode = findViewById<EditText>(R.id.edtCode)
+        val inputCode = findViewById<EditText>(R.id.edtCode)
         val btnActivate = findViewById<Button>(R.id.btnActivate)
 
         btnActivate.setOnClickListener {
-            val code = edtCode.text.toString().trim()
-
-            if (code.isEmpty()) {
-                Toast.makeText(this, "Digite o código", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val success = PremiumManager.activateWithCode(this, code)
+            val code = inputCode.text.toString().trim()
+            val success = PremiumManager.activatePremium(this, code)
 
             if (success) {
-                Toast.makeText(this, "✅ Premium ativado com sucesso!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Premium ativado com sucesso!", Toast.LENGTH_LONG).show()
                 finish()
             } else {
-                Toast.makeText(this, "❌ Código inválido", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Código inválido!", Toast.LENGTH_SHORT).show()
             }
         }
     }
