@@ -1,57 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/txtStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: permissões pendentes"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:text="Conceder permissões" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Call Blocker"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="12dp"/>
+    <Button
+        android:id="@+id/btnAutostart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Inicialização automática"
+        android:layout_marginTop="12dp" />
 
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status: aguardando configuração"
-            android:layout_marginBottom="20dp"/>
+    <Button
+        android:id="@+id/btnBattery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ignorar otimização de bateria"
+        android:layout_marginTop="12dp" />
 
-        <Button
-            android:id="@+id/btnPermissions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Conceder permissões"/>
+    <Button
+        android:id="@+id/btnWhatsapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suporte via WhatsApp"
+        android:layout_marginTop="24dp" />
 
-        <Button
-            android:id="@+id/btnCallFilter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ativar filtro de chamadas"
-            android:layout_marginTop="12dp"/>
-
-        <Button
-            android:id="@+id/btnBattery"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ignorar otimização de bateria"
-            android:layout_marginTop="12dp"/>
-
-        <Button
-            android:id="@+id/btnWhatsapp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Suporte via WhatsApp"
-            android:layout_marginTop="24dp"/>
-
-    </LinearLayout>
-</ScrollView>
-  
+</LinearLayout>
