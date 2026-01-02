@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-        <!-- 📱 Main -->
+        <!-- 🏠 Tela principal -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -26,12 +26,12 @@
 
         </activity>
 
-        <!-- ⭐ Premium -->
+        <!-- 💎 Tela Premium -->
         <activity
             android:name=".ui.PremiumActivity"
             android:exported="false" />
 
-        <!-- 🔒 Call Screening -->
+        <!-- 🔒 Serviço de bloqueio -->
         <service
             android:name=".service.CallBlockService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
