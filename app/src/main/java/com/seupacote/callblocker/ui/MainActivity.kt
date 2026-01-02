@@ -34,23 +34,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateStatus() {
-        val premiumActive = PremiumManager.isPremiumActive(this)
-        val trialActive = TrialManager.isTrialActive(this)
+    val isPremium = PremiumManager.isPremiumActive(this)
+    val isTrial = TrialManager.isTrialActive(this)
 
-        txtStatus.text = when {
-            premiumActive -> {
-                val days = PremiumManager.getDaysLeft(this)
-                "⭐ Premium ativo\nDias restantes: $days\nBloqueio total ativo"
-            }
+    txtStatus.text = when {
+        isPremium ->
+            "💎 Premium ativo\nBloqueio total habilitado"
 
-            trialActive -> {
-                val days = TrialManager.getDaysLeft(this)
-                "🎁 Trial ativo\n$days dias restantes\nBloqueio ativo"
-            }
+        isTrial ->
+            "🎁 Trial ativo\nBloqueio habilitado"
 
-            else -> {
-                "⛔ Bloqueio desativado\nAssine o Premium para continuar"
-            }
-        }
+        else ->
+            "🔒 Bloqueio desativado\nAssine o Premium"
     }
+  }
 }
