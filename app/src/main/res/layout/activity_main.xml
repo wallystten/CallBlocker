@@ -20,7 +20,7 @@
         android:text="Conceder permissões" />
 
     <Button
-        android:id="@+id/btnCallFilter"
+        android:id="@+id/btnActivateFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ativar filtro de chamadas"
