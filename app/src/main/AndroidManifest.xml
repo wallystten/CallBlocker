@@ -13,29 +13,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-        <!-- Tela principal -->
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!-- Tela Premium -->
         <activity
             android:name=".ui.PremiumActivity"
             android:exported="false" />
 
-        <!-- Serviço de bloqueio -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
         <service
             android:name=".service.CallBlockService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
+
         </service>
 
     </application>
