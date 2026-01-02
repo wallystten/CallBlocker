@@ -33,3 +33,4 @@ class PremiumActivity : AppCompatActivity() {
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 }
+ 
