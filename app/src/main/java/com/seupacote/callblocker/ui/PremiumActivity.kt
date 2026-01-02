@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.seupacote.callblocker.R
 
@@ -14,29 +13,20 @@ class PremiumActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_premium)
 
-        val txtTitle = findViewById<TextView>(R.id.txtPremiumTitle)
-        val txtPrice = findViewById<TextView>(R.id.txtPremiumPrice)
-
-        val btnSubscribe = findViewById<Button>(R.id.btnSubscribe)
-        val btnWhatsapp = findViewById<Button>(R.id.btnWhatsappPremium)
-        val btnBack = findViewById<Button>(R.id.btnBack)
-
-        txtTitle.text = "Premium Call Blocker"
-        txtPrice.text = "R$ 9,90 / mês\nBloqueio total de chamadas desconhecidas"
-
-        btnSubscribe.setOnClickListener {
-            // Futuramente aqui entra o pagamento
-            btnSubscribe.text = "Pagamento em breve"
+        // Botão assinar Premium (por enquanto direciona ao WhatsApp)
+        findViewById<Button>(R.id.btnAssinarPremium).setOnClickListener {
+            abrirWhatsApp()
         }
 
-        btnWhatsapp.setOnClickListener {
-            val uri = Uri.parse("https://wa.me/5547988818203")
-            startActivity(Intent(Intent.ACTION_VIEW, uri))
-        }
-
-        btnBack.setOnClickListener {
+        // Botão voltar
+        findViewById<Button>(R.id.btnVoltar).setOnClickListener {
             finish()
         }
     }
+
+    private fun abrirWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone?text=Quero%20assinar%20o%20Premium%20do%20Call%20Blocker")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
 }
- 
