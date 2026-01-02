@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.telecom.TelecomManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -27,11 +26,11 @@ class MainActivity : AppCompatActivity() {
         txtStatus = findViewById(R.id.txtStatus)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            requestBasePermissions()
+            handlePermissionsFlow()
         }
 
-        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openCallScreeningSettings()
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            openGeneralSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -45,59 +44,57 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    private fun requestBasePermissions() {
-        val permissions = mutableListOf<String>()
+    private fun handlePermissionsFlow() {
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-            != PackageManager.PERMISSION_GRANTED
+        // 1️⃣ CONTATOS
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            permissions.add(Manifest.permission.READ_CONTACTS)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                100
+            )
+            return
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-            != PackageManager.PERMISSION_GRANTED
+        // 2️⃣ TELEFONE
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            permissions.add(Manifest.permission.READ_PHONE_STATE)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
+                101
+            )
+            return
         }
 
-        if (permissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 200)
-        } else {
-            Toast.makeText(this, "Permissões já concedidas", Toast.LENGTH_SHORT).show()
-        }
+        // 3️⃣ CALL SCREENING (fluxo oficial permitido)
+        openCallScreeningSettings()
     }
 
-    /**
-     * 🔴 MÉTODO CORRETO PARA ATIVAR CALL SCREENING
-     */
     private fun openCallScreeningSettings() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_CALL_SCREENING_APP)
-                intent.putExtra(
-                    TelecomManager.EXTRA_CHANGE_CALL_SCREENING_APP_PACKAGE_NAME,
-                    packageName
-                )
-                startActivity(intent)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Ative o filtro de chamadas nas configurações do sistema",
-                    Toast.LENGTH_LONG
-                ).show()
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-            }
+            Toast.makeText(
+                this,
+                "Selecione o Call Blocker como app de filtro de chamadas",
+                Toast.LENGTH_LONG
+            ).show()
+
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+
         } catch (e: Exception) {
             Toast.makeText(
                 this,
-                "Este dispositivo não suporta filtro de chamadas",
-                Toast.LENGTH_LONG
+                "Não foi possível abrir as configurações",
+                Toast.LENGTH_SHORT
             ).show()
         }
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     private fun openWhatsApp() {
@@ -106,25 +103,41 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
-    private fun updateStatus() {
-        val contactsGranted =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) ==
-                    PackageManager.PERMISSION_GRANTED
-
-        val phoneGranted =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) ==
-                    PackageManager.PERMISSION_GRANTED
-
-        txtStatus.text = when {
-            !contactsGranted || !phoneGranted ->
-                "Status: permissões pendentes"
-            else ->
-                "Status: ative o filtro de chamadas"
-        }
+    private fun openGeneralSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    }
+
+    private fun updateStatus() {
+        val contactsGranted =
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED
+
+        val phoneGranted =
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED
+
+        txtStatus.text =
+            if (contactsGranted && phoneGranted) {
+                "Status: permissões concedidas"
+            } else {
+                "Status: permissões pendentes"
+            }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         updateStatus()
     }
 }
