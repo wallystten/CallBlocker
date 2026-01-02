@@ -11,6 +11,14 @@
         android:layout_height="wrap_content"
         android:text="Status"
         android:textSize="18sp"
+        android:paddingBottom="12dp" />
+
+    <TextView
+        android:id="@+id/txtInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠️ Para funcionar, ative manualmente:\nConfigurações > Apps padrão > App de triagem de chamadas"
+        android:textSize="14sp"
         android:paddingBottom="16dp" />
 
     <Button
@@ -18,13 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Conceder permissões" />
-
-    <Button
-        android:id="@+id/btnAutostart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ativar filtro de chamadas"
-        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnBattery"
@@ -37,7 +38,7 @@
         android:id="@+id/btnWhatsapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Falar no WhatsApp"
+        android:text="Suporte via WhatsApp"
         android:layout_marginTop="8dp" />
 
 </LinearLayout>
