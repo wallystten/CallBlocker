@@ -17,7 +17,11 @@ class PremiumActivity : AppCompatActivity() {
 
         btnActivate.setOnClickListener {
             PremiumManager.activatePremium(this)
-            Toast.makeText(this, "Premium ativado com sucesso 💎", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "💎 Premium ativado com sucesso!",
+                Toast.LENGTH_LONG
+            ).show()
             finish()
         }
     }
