@@ -4,10 +4,8 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.telecom.TelecomManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openSystemSettings()
+            openAppSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -45,20 +43,15 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    // 🔐 Fluxo correto de permissões
     private fun requestPermissionsFlow() {
+        val permissionsNeeded = mutableListOf<String>()
 
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                100
-            )
-            return
+            permissionsNeeded.add(Manifest.permission.READ_CONTACTS)
         }
 
         if (ContextCompat.checkSelfPermission(
@@ -66,46 +59,29 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.READ_PHONE_STATE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            permissionsNeeded.add(Manifest.permission.READ_PHONE_STATE)
+        }
+
+        if (permissionsNeeded.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE),
-                101
+                permissionsNeeded.toTypedArray(),
+                100
             )
-            return
-        }
-
-        openCallScreeningSettings()
-    }
-
-    // 📞 Abre a TELA CORRETA para ativar filtro de chamadas
-    private fun openCallScreeningSettings() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                intent.putExtra(
-                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
-                    packageName
-                )
-                startActivity(intent)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Ative o filtro de chamadas nas configurações do sistema",
-                    Toast.LENGTH_LONG
-                ).show()
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-            }
-        } catch (e: Exception) {
+        } else {
             Toast.makeText(
                 this,
-                "Não foi possível abrir as configurações de chamadas",
-                Toast.LENGTH_SHORT
+                "Permissões já concedidas. Agora ative o filtro nas configurações.",
+                Toast.LENGTH_LONG
             ).show()
+            openAppSettings()
         }
     }
 
-    private fun openSystemSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:$packageName")
+        startActivity(intent)
     }
 
     private fun openBatterySettings() {
@@ -114,11 +90,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun openWhatsApp() {
         val phone = "5547988818203"
-        val intent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://wa.me/$phone")
-        )
-        startActivity(intent)
+        val uri = Uri.parse("https://wa.me/$phone")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
     private fun updateStatus() {
@@ -136,7 +109,7 @@ class MainActivity : AppCompatActivity() {
 
         txtStatus.text =
             if (contactsGranted && phoneGranted) {
-                "Status: permissões concedidas\nAguardando ativação do filtro"
+                "Status: permissões concedidas\nBloqueio ativo"
             } else {
                 "Status: permissões pendentes"
             }
@@ -148,6 +121,9 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        updateStatus()
+    }
+}ults)
         updateStatus()
     }
 }
