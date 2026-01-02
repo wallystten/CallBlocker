@@ -1,23 +1,24 @@
-package com.seupacote.callblocker.util
+package com.seupacote.callblocker.ui
 
-import android.content.Context
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.seupacote.callblocker.R
+import com.seupacote.callblocker.util.PremiumManager
 
-object PremiumManager {
+class PremiumActivity : AppCompatActivity() {
 
-    private const val PREFS = "premium_prefs"
-    private const val KEY_PREMIUM = "premium_active"
-    private const val KEY_PREMIUM_DATE = "premium_date"
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_premium)
 
-    fun activatePremium(context: Context) {
-        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        prefs.edit()
-            .putBoolean(KEY_PREMIUM, true)
-            .putLong(KEY_PREMIUM_DATE, System.currentTimeMillis())
-            .apply()
-    }
+        val btnActivate = findViewById<Button>(R.id.btnActivatePremium)
 
-    fun isPremiumActive(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_PREMIUM, false)
+        btnActivate.setOnClickListener {
+            PremiumManager.activatePremium(this)
+            Toast.makeText(this, "Premium ativado com sucesso 💎", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
 }
