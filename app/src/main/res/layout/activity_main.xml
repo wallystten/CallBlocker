@@ -22,7 +22,7 @@
             android:id="@+id/txtStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status: permissões pendentes"
+            android:text="Status: aguardando configuração"
             android:layout_marginBottom="20dp"/>
 
         <Button
@@ -32,10 +32,10 @@
             android:text="Conceder permissões"/>
 
         <Button
-            android:id="@+id/btnAutostart"
+            android:id="@+id/btnCallFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inicialização automática"
+            android:text="Ativar filtro de chamadas"
             android:layout_marginTop="12dp"/>
 
         <Button
