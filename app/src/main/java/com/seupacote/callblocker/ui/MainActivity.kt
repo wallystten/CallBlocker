@@ -12,34 +12,72 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
+import com.seupacote.callblocker.util.PremiumManager
 import com.seupacote.callblocker.util.TrialManager
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var txtStatus: TextView
-    private lateinit var txtInfo: TextView
+    private lateinit var txtHint: TextView
+    private lateinit var btnPremium: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         txtStatus = findViewById(R.id.txtStatus)
-        txtInfo = findViewById(R.id.txtInfo)
+        txtHint = findViewById(R.id.txtHint)
+        btnPremium = findViewById(R.id.btnPremium)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
             requestPermissions()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
-            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            openBatterySettings()
         }
 
         findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
-            val uri = Uri.parse("https://wa.me/5547988818203")
-            startActivity(Intent(Intent.ACTION_VIEW, uri))
+            openWhatsApp()
         }
 
-        updateStatus()
+        btnPremium.setOnClickListener {
+            startActivity(Intent(this, PremiumActivity::class.java))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    private fun updateUI() {
+        val isPremium = PremiumManager.isPremiumActive(this)
+        val isTrialActive = TrialManager.isTrialActive(this)
+        val daysLeft = TrialManager.getDaysLeft(this)
+
+        when {
+            isPremium -> {
+                txtStatus.text = "🟢 Premium ativo\nBloqueio total habilitado"
+                txtHint.text = "Obrigado por apoiar o projeto 💜"
+                btnPremium.visibility = Button.GONE
+            }
+
+            isTrialActive -> {
+                txtStatus.text = "🟢 Trial ativo: $daysLeft dia(s)\nBloqueio disponível"
+                txtHint.text =
+                    "⚠️ Para funcionar, ative manualmente:\nConfigurações > Apps padrão > App de triagem de chamadas"
+                btnPremium.visibility = Button.VISIBLE
+                btnPremium.text = "Assinar Premium – R$ 9,90/mês"
+            }
+
+            else -> {
+                txtStatus.text = "🔴 Trial expirado\nBloqueio desativado"
+                txtHint.text = "Assine o Premium para continuar protegido"
+                btnPremium.visibility = Button.VISIBLE
+                btnPremium.text = "Assinar Premium – R$ 9,90/mês"
+            }
+        }
     }
 
     private fun requestPermissions() {
@@ -57,24 +95,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateStatus() {
-        val trialActive = TrialManager.isTrialActive(this)
-        val daysLeft = TrialManager.getDaysLeft(this)
-
-        txtStatus.text = if (trialActive) {
-            "🟢 Trial ativo: $daysLeft dia(s)\nBloqueio disponível"
-        } else {
-            "🔴 Trial expirado\nBloqueio desativado"
-        }
+    private fun openBatterySettings() {
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        updateStatus()
+    private fun openWhatsApp() {
+        val uri = Uri.parse("https://wa.me/5547988818203")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 }
-  
