@@ -10,32 +10,26 @@
         android:allowBackup="true"
         android:label="Call Blocker"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-        <!-- 📱 Activity principal -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
-        <!-- 🔒 Serviço de bloqueio de chamadas -->
         <service
             android:name=".service.CallBlockService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
-
         </service>
 
     </application>
