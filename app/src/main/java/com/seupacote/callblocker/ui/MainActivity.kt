@@ -25,11 +25,11 @@ class MainActivity : AppCompatActivity() {
         txtStatus = findViewById(R.id.txtStatus)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            requestPermissionsFlow()
+            requestPermissions()
         }
 
-        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openAppSettings()
+        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
+            openAppSettingsForCallFilter()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -43,42 +43,22 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    private fun requestPermissionsFlow() {
-        val permissionsNeeded = mutableListOf<String>()
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE
+        )
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsNeeded.add(Manifest.permission.READ_CONTACTS)
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsNeeded.add(Manifest.permission.READ_PHONE_STATE)
-        }
-
-        if (permissionsNeeded.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                this,
-                permissionsNeeded.toTypedArray(),
-                100
-            )
-        } else {
-            Toast.makeText(
-                this,
-                "Permissões já concedidas. Agora ative o filtro nas configurações.",
-                Toast.LENGTH_LONG
-            ).show()
-            openAppSettings()
-        }
+        ActivityCompat.requestPermissions(this, permissions, 100)
     }
 
-    private fun openAppSettings() {
+    private fun openAppSettingsForCallFilter() {
+        Toast.makeText(
+            this,
+            "Ative o Call Blocker como filtro de chamadas nesta tela",
+            Toast.LENGTH_LONG
+        ).show()
+
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.parse("package:$packageName")
         startActivity(intent)
@@ -113,17 +93,5 @@ class MainActivity : AppCompatActivity() {
             } else {
                 "Status: permissões pendentes"
             }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        updateStatus()
-    }
-}ults)
-        updateStatus()
     }
 }
