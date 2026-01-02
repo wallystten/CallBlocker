@@ -4,43 +4,48 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center">
+    android:background="#0E0E11">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/txtPremiumTitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="💎 Premium"
-        android:textSize="26sp"
+        android:text="Premium"
+        android:textSize="22sp"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="12dp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/txtPremiumPrice"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bloqueio total de chamadas\nNúmeros não salvos"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        android:paddingBottom="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="7 dias grátis\nDepois R$ 9,90 / mês"
-        android:textStyle="bold"
+        android:text="R$ 9,90 / mês"
         android:textSize="18sp"
+        android:textColor="#CFC3FF"
         android:paddingBottom="24dp" />
 
     <Button
         android:id="@+id/btnSubscribe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Assinar Premium" />
+        android:text="Assinar Premium"
+        android:backgroundTint="#CFC3FF"
+        android:textColor="#000000"
+        android:layout_marginBottom="12dp" />
 
     <Button
         android:id="@+id/btnWhatsappPremium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Falar no WhatsApp"
-        android:layout_marginTop="12dp" />
+        android:text="Falar com suporte no WhatsApp"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voltar"
+        android:layout_marginTop="24dp" />
 
 </LinearLayout>
