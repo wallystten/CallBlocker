@@ -3,18 +3,16 @@ package com.seupacote.callblocker.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
-import com.seupacote.callblocker.util.TrialManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openSystemSettings()
+            openAppSettingsForCallFilter()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -45,96 +43,83 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    // 🔐 Permissões básicas
+    /* 🔐 Fluxo de permissões */
     private fun requestPermissionsFlow() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE
+        )
 
-        if (ContextCompat.checkSelfPermission(
+        val notGranted = permissions.any {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (notGranted) {
+            ActivityCompat.requestPermissions(this, permissions, 100)
+        } else {
+            Toast.makeText(
+                this,
+                "Permissões já concedidas",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    /* 📞 Ativar filtro de chamadas (limite do Android) */
+    private fun openAppSettingsForCallFilter() {
+        Toast.makeText(
+            this,
+            "Ative o Call Blocker como filtro de chamadas nesta tela",
+            Toast.LENGTH_LONG
+        ).show()
+
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:$packageName")
+        startActivity(intent)
+    }
+
+    /* 🔋 Bateria */
+    private fun openBatterySettings() {
+        startActivity(
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        )
+    }
+
+    /* 💬 WhatsApp */
+    private fun openWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
+
+    /* 📊 Status */
+    private fun updateStatus() {
+        val contactsGranted =
+            ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                100
-            )
-            return
-        }
+            ) == PackageManager.PERMISSION_GRANTED
 
-        if (ContextCompat.checkSelfPermission(
+        val phoneGranted =
+            ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_PHONE_STATE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE),
-                101
-            )
-            return
-        }
-
-        showCallScreeningDialog()
-    }
-
-    // 📞 UX correta para ativar Call Screening
-    private fun showCallScreeningDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Ativar filtro de chamadas")
-            .setMessage(
-                "Para o bloqueio funcionar, selecione o Call Blocker como app padrão de identificação de chamadas e spam.\n\n" +
-                        "Toque em \"Configurações\" e escolha Call Blocker."
-            )
-            .setPositiveButton("Configurações") { _, _ ->
-                openCallScreeningSettings()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    private fun openCallScreeningSettings() {
-        try {
-            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                Intent(Settings.ACTION_CALL_SCREENING_SETTINGS)
-            } else {
-                Intent(Settings.ACTION_SETTINGS)
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
-        }
-    }
-
-    private fun openSystemSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-    }
-
-    private fun openWhatsApp() {
-        val uri = Intent(Intent.ACTION_VIEW).apply {
-            data = android.net.Uri.parse("https://wa.me/5547988818203")
-        }
-        startActivity(uri)
-    }
-
-    // 📊 Status (Trial / Premium)
-    private fun updateStatus() {
-        val trialActive = TrialManager.isTrialActive(this)
-        val daysLeft = TrialManager.getDaysLeft(this)
+            ) == PackageManager.PERMISSION_GRANTED
 
         txtStatus.text =
-            if (trialActive) {
-                "🆓 Trial ativo\n$daysLeft dia(s) restantes\nBloqueio ativo"
+            if (contactsGranted && phoneGranted) {
+                "Status: Proteção ativa"
             } else {
-                "🔒 Trial expirado\nAtive o Premium"
+                "Status: Permissões pendentes"
             }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         updateStatus()
     }
 }
