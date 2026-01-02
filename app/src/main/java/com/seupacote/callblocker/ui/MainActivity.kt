@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity() {
         txtStatus = findViewById(R.id.txtStatus)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            handlePermissionsFlow()
+            requestBasePermissions()
         }
 
-        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
-            openGeneralSettings()
+        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
+            openCallScreeningSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -45,37 +45,26 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    private fun handlePermissionsFlow() {
-        // 1️⃣ CONTATOS
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
+    private fun requestBasePermissions() {
+        val permissions = mutableListOf<String>()
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                100
-            )
-            return
+            permissions.add(Manifest.permission.READ_CONTACTS)
         }
 
-        // 2️⃣ TELEFONE
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+            != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE),
-                101
-            )
-            return
+            permissions.add(Manifest.permission.READ_PHONE_STATE)
         }
 
-        // 3️⃣ FILTRO DE CHAMADAS
-        openCallScreeningSettings()
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 200)
+        } else {
+            Toast.makeText(this, "Permissões já concedidas", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openCallScreeningSettings() {
@@ -88,64 +77,42 @@ class MainActivity : AppCompatActivity() {
                 )
                 startActivity(intent)
             } else {
-                Toast.makeText(
-                    this,
-                    "Ative o filtro de chamadas nas configurações do sistema",
-                    Toast.LENGTH_LONG
-                ).show()
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             }
         } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Não foi possível abrir o filtro de chamadas",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Não foi possível abrir o filtro de chamadas", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun openWhatsApp() {
-        val phone = "5547988818203"
-        val uri = Uri.parse("https://wa.me/$phone")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent)
-    }
-
-    private fun openGeneralSettings() {
-        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
     private fun openBatterySettings() {
         startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
-    private fun updateStatus() {
-        val contactsGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED
-
-        val phoneGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED
-
-        txtStatus.text =
-            if (contactsGranted && phoneGranted) {
-                "Status: permissões concedidas"
-            } else {
-                "Status: permissões pendentes"
-            }
+    private fun openWhatsApp() {
+        val phone = "5547988818203"
+        val uri = Uri.parse("https://wa.me/$phone")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    private fun updateStatus() {
+        val contacts =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) ==
+                    PackageManager.PERMISSION_GRANTED
+
+        val phone =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) ==
+                    PackageManager.PERMISSION_GRANTED
+
+        txtStatus.text = when {
+            !contacts || !phone ->
+                "Status: permissões pendentes"
+            else ->
+                "Status: ative o filtro de chamadas"
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
         updateStatus()
     }
 }
