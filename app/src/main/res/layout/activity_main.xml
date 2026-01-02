@@ -3,45 +3,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal">
-
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Call Blocker"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/txtStatus"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Status: verificando..."
-        android:textSize="16sp"
-        android:layout_marginBottom="24dp"/>
+        android:text="Status"
+        android:textSize="18sp"
+        android:paddingBottom="16dp" />
 
     <Button
         android:id="@+id/btnPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conceder permissões e ativar filtro"/>
+        android:text="Conceder permissões" />
+
+    <Button
+        android:id="@+id/btnAutostart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Configurações do sistema"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnBattery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ignorar otimização de bateria"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btnWhatsapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Suporte via WhatsApp"
-        android:layout_marginTop="24dp"/>
+        android:text="Falar no WhatsApp"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>
-  
