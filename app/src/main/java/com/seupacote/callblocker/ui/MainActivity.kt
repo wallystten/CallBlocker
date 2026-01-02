@@ -104,3 +104,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 }
+  
