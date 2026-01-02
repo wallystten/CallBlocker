@@ -3,7 +3,6 @@ package com.seupacote.callblocker.service
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallScreeningService
-import android.telecom.CallScreeningService.CallResponse
 import com.seupacote.callblocker.util.TrialManager
 
 class CallBlockService : CallScreeningService() {
@@ -12,29 +11,27 @@ class CallBlockService : CallScreeningService() {
 
         val number = callDetails.handle?.schemeSpecificPart
 
-        // 🔑 VERIFICA SE O TRIAL AINDA ESTÁ ATIVO
+        // 🔑 Verifica se o trial está ativo
         val isTrialActive = TrialManager.isTrialActive(this)
 
+        // ⛔ Trial expirado → não bloqueia nada
         if (!isTrialActive) {
-            // ⛔ Trial acabou → NÃO bloqueia nada
             respondToCall(callDetails, CallResponse.Builder().build())
             return
         }
 
+        // 🔍 Verifica se o número está salvo
         val isSavedContact = isNumberInContacts(number)
 
         val response = CallResponse.Builder()
 
         if (!isSavedContact) {
-            // 🔴 TRIAL ATIVO → BLOQUEIA NÚMEROS NÃO SALVOS
+            // 🔴 Bloqueia chamadas de números NÃO salvos
             response
                 .setDisallowCall(true)
                 .setRejectCall(true)
                 .setSkipCallLog(false)
                 .setSkipNotification(true)
-        } else {
-            // 🟢 CONTATO SALVO → PERMITE
-            response.setDisallowCall(false)
         }
 
         respondToCall(callDetails, response.build())
@@ -43,7 +40,8 @@ class CallBlockService : CallScreeningService() {
     private fun isNumberInContacts(number: String?): Boolean {
         if (number.isNullOrBlank()) return false
 
-        val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+        val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI
+            .buildUpon()
             .appendPath(number)
             .build()
 
