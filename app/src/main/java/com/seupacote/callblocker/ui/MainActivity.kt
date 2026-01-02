@@ -26,22 +26,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Status
         txtStatus = findViewById(R.id.txtStatus)
 
-        // Botões
+        // 🔐 Permissões
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
             handlePermissionsFlow()
         }
 
-        findViewById<Button>(R.id.btnSettings).setOnClickListener {
-            openSystemSettings()
+        // ⚙️ Configurações do sistema
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            openGeneralSettings()
         }
 
+        // 🔋 Bateria
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
             openBatterySettings()
         }
 
+        // 💬 WhatsApp
         findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
             openWhatsApp()
         }
@@ -49,9 +51,8 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    // 🔐 Fluxo de permissões
     private fun handlePermissionsFlow() {
-
+        // 1️⃣ Contatos
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // 2️⃣ Telefone
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_PHONE_STATE
@@ -78,10 +80,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // 3️⃣ Filtro de chamadas
         openCallScreeningSettings()
     }
 
-    // 📞 Ativar filtro de chamadas
     private fun openCallScreeningSettings() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -97,45 +99,37 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Toast.makeText(
                 this,
-                "Não foi possível abrir o filtro de chamadas",
+                "Não foi possível abrir as configurações de chamadas",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
-    // ⚙️ Configurações gerais
-    private fun openSystemSettings() {
+    private fun openGeneralSettings() {
         startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    // 🔋 Bateria
     private fun openBatterySettings() {
-        startActivity(
-            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-        )
+        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
-    // 💬 WhatsApp
     private fun openWhatsApp() {
         val phone = "5547988818203"
         val uri = Uri.parse("https://wa.me/$phone")
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
-    // 📊 Status Premium / Trial
     private fun updateStatus() {
         val premiumActive = PremiumManager.isPremiumActive(this)
-        val premiumDays = PremiumManager.getDaysLeft(this)
-
         val trialActive = TrialManager.isTrialActive(this)
-        val trialDays = TrialManager.getDaysLeft(this)
+        val daysLeft = TrialManager.getDaysLeft(this)
 
         txtStatus.text = when {
             premiumActive ->
-                "Premium ativo\n$premiumDays dia(s) restantes\nBloqueio total ativo"
+                "Premium ativo\nBloqueio total ativo"
 
             trialActive ->
-                "Trial ativo\n$trialDays dia(s) restantes\nBloqueio ativo"
+                "Trial ativo\n$daysLeft dia(s) restantes\nBloqueio ativo"
 
             else ->
                 "Bloqueio desativado\nAtive o Premium"
