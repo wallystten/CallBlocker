@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Permissões -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_SCREENING" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -13,10 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-        <activity
-            android:name=".ui.PremiumActivity"
-            android:exported="false" />
-
+        <!-- Main -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -25,9 +23,14 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
+        <!-- Premium -->
+        <activity
+            android:name=".ui.PremiumActivity"
+            android:exported="false" />
+
+        <!-- Call Screening -->
         <service
             android:name=".service.CallBlockService"
             android:permission="android.permission.BIND_SCREENING_SERVICE"
@@ -36,7 +39,6 @@
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
-
         </service>
 
     </application>
