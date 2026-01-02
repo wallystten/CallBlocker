@@ -35,11 +35,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStatus() {
         val isPremium = PremiumManager.isPremiumActive(this)
+        val premiumDays = PremiumManager.getDaysLeft(this)
         val isTrial = TrialManager.isTrialActive(this)
 
         txtStatus.text = when {
             isPremium ->
-                "💎 Premium ativo\nBloqueio total habilitado"
+                "💎 Premium ativo\nDias restantes: $premiumDays"
 
             isTrial ->
                 "🎁 Trial ativo\nBloqueio habilitado"
