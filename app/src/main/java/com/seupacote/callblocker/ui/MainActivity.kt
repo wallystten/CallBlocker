@@ -67,20 +67,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 🔴 MÉTODO CORRETO PARA ATIVAR CALL SCREENING
+     */
     private fun openCallScreeningSettings() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                val intent = Intent(TelecomManager.ACTION_CHANGE_CALL_SCREENING_APP)
                 intent.putExtra(
-                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
+                    TelecomManager.EXTRA_CHANGE_CALL_SCREENING_APP_PACKAGE_NAME,
                     packageName
                 )
                 startActivity(intent)
             } else {
+                Toast.makeText(
+                    this,
+                    "Ative o filtro de chamadas nas configurações do sistema",
+                    Toast.LENGTH_LONG
+                ).show()
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Não foi possível abrir o filtro de chamadas", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Este dispositivo não suporta filtro de chamadas",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -95,16 +107,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateStatus() {
-        val contacts =
+        val contactsGranted =
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) ==
                     PackageManager.PERMISSION_GRANTED
 
-        val phone =
+        val phoneGranted =
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) ==
                     PackageManager.PERMISSION_GRANTED
 
         txtStatus.text = when {
-            !contacts || !phone ->
+            !contactsGranted || !phoneGranted ->
                 "Status: permissões pendentes"
             else ->
                 "Status: ative o filtro de chamadas"
