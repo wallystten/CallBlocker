@@ -12,14 +12,14 @@
         android:text="Call Blocker"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="12dp"/>
 
     <TextView
         android:id="@+id/txtStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Status: permissões pendentes"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="20dp"/>
 
     <Button
         android:id="@+id/btnPermissions"
@@ -41,5 +41,11 @@
         android:text="Ignorar otimização de bateria"
         android:layout_marginTop="12dp"/>
 
+    <Button
+        android:id="@+id/btnWhatsapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suporte via WhatsApp"
+        android:layout_marginTop="24dp"/>
+
 </LinearLayout>
-  
