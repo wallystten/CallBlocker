@@ -14,19 +14,19 @@ class CallBlockService : CallScreeningService() {
         // 🔑 Verifica se o trial está ativo
         val isTrialActive = TrialManager.isTrialActive(this)
 
-        // ⛔ Trial expirado → não bloqueia nada
+        // ⛔ Trial expirado → NÃO bloqueia nada
         if (!isTrialActive) {
             respondToCall(callDetails, CallResponse.Builder().build())
             return
         }
 
-        // 🔍 Verifica se o número está salvo
+        // 🔍 Verifica se o número está salvo nos contatos
         val isSavedContact = isNumberInContacts(number)
 
         val response = CallResponse.Builder()
 
         if (!isSavedContact) {
-            // 🔴 Bloqueia chamadas de números NÃO salvos
+            // 🔴 BLOQUEIA chamadas de números NÃO salvos
             response
                 .setDisallowCall(true)
                 .setRejectCall(true)
