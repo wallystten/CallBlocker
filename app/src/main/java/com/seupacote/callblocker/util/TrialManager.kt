@@ -10,18 +10,16 @@ object TrialManager {
 
     fun isTrialActive(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
         val startDate = prefs.getLong(KEY_START_DATE, 0L)
 
+        // primeira execução
         if (startDate == 0L) {
-            // Primeira execução → inicia o trial
             prefs.edit().putLong(KEY_START_DATE, System.currentTimeMillis()).apply()
             return true
         }
 
         val elapsedMillis = System.currentTimeMillis() - startDate
         val elapsedDays = elapsedMillis / (1000 * 60 * 60 * 24)
-
         return elapsedDays < TRIAL_DAYS
     }
 
@@ -33,7 +31,6 @@ object TrialManager {
 
         val elapsedMillis = System.currentTimeMillis() - startDate
         val elapsedDays = elapsedMillis / (1000 * 60 * 60 * 24)
-
         return (TRIAL_DAYS - elapsedDays).toInt().coerceAtLeast(0)
     }
 }
