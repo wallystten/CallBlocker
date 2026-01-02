@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
+import com.seupacote.callblocker.util.PremiumManager
 import com.seupacote.callblocker.util.TrialManager
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +28,11 @@ class MainActivity : AppCompatActivity() {
         txtStatus = findViewById(R.id.txtStatus)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            startPermissionFlow()
+            handlePermissionsFlow()
+        }
+
+        findViewById<Button>(R.id.btnAutostart).setOnClickListener {
+            openGeneralSettings()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
@@ -40,10 +46,8 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 
-    /**
-     * 🔁 Fluxo guiado de permissões
-     */
-    private fun startPermissionFlow() {
+    // 🔐 Fluxo guiado de permissões
+    private fun handlePermissionsFlow() {
 
         // 1️⃣ CONTATOS
         if (ContextCompat.checkSelfPermission(
@@ -73,74 +77,59 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // 3️⃣ CALL SCREENING (limitação do Android)
+        // 3️⃣ CALL SCREENING (manual, sem API quebrada)
         Toast.makeText(
             this,
-            "Agora ative o Call Blocker como filtro de chamadas",
+            "Agora ative o filtro de chamadas para o Call Blocker",
             Toast.LENGTH_LONG
         ).show()
 
-        // Android exige ação manual do usuário
         startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    /**
-     * 🔋 Ignorar otimização de bateria
-     */
-    private fun openBatterySettings() {
-        try {
-            startActivity(
-                Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-            )
-        } catch (e: Exception) {
-            Toast.makeText(
-                this,
-                "Configuração não disponível neste aparelho",
-                Toast.LENGTH_SHORT
-            ).show()
+    // 📊 Atualiza status (Trial / Premium)
+    private fun updateStatus() {
+
+        val premiumActive = PremiumManager.isPremiumActive(this)
+        val premiumDays = PremiumManager.getDaysLeft(this)
+
+        val trialActive = TrialManager.isTrialActive(this)
+        val daysLeft = TrialManager.getDaysLeft(this)
+
+        txtStatus.text = when {
+            premiumActive ->
+                "✅ Premium ativo\n$premiumDays dia(s) restantes\nBloqueio total ativo"
+
+            trialActive ->
+                "🆓 Trial ativo\n$daysLeft dia(s) restantes\nBloqueio ativo"
+
+            else ->
+                "⛔ Bloqueio desativado\nAtive o Premium"
         }
     }
 
-    /**
-     * 💬 Suporte WhatsApp
-     */
+    // ⚙️ Configurações gerais
+    private fun openGeneralSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
+    }
+
+    // 🔋 Ignorar otimização de bateria
+    private fun openBatterySettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+        } else {
+            openGeneralSettings()
+        }
+    }
+
+    // 💬 WhatsApp
     private fun openWhatsApp() {
         val phone = "5547988818203"
         val uri = Uri.parse("https://wa.me/$phone")
         startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
-    /**
-     * 📊 Atualiza status visual do app
-     */
-    private fun updateStatus() {
-        val contactsGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED
-
-        val phoneGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED
-
-        val trialActive = TrialManager.isTrialActive(this)
-        val daysLeft = TrialManager.getDaysLeft(this)
-
-        txtStatus.text = when {
-            !contactsGranted || !phoneGranted ->
-                "Status: permissões pendentes"
-
-            trialActive ->
-                "Trial ativo: $daysLeft dia(s) restante(s)\nBloqueio de chamadas ativo"
-
-            else ->
-                "Trial encerrado\nAtive o Premium para continuar"
-        }
-    }
-
+    // 🔄 Retorno das permissões
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -150,4 +139,3 @@ class MainActivity : AppCompatActivity() {
         updateStatus()
     }
 }
-  
