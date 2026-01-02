@@ -3,21 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:background="#0E0B1F">
 
     <TextView
         android:id="@+id/txtStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Status"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
-        android:paddingBottom="12dp" />
+        android:textStyle="bold"
+        android:paddingBottom="8dp" />
 
     <TextView
-        android:id="@+id/txtInfo"
+        android:id="@+id/txtHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="⚠️ Para funcionar, ative manualmente:\nConfigurações > Apps padrão > App de triagem de chamadas"
+        android:textColor="#FFC107"
         android:textSize="14sp"
         android:paddingBottom="16dp" />
 
@@ -25,20 +28,27 @@
         android:id="@+id/btnPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conceder permissões" />
+        android:text="Conceder permissões"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/btnBattery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ignorar otimização de bateria"
-        android:layout_marginTop="8dp" />
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:id="@+id/btnPremium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Assinar Premium"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/btnWhatsapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Suporte via WhatsApp"
-        android:layout_marginTop="8dp" />
+        android:text="Suporte via WhatsApp" />
 
 </LinearLayout>
