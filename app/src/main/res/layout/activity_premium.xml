@@ -1,49 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp">
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
 
-    <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="💎 Premium"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bloqueio total de chamadas\nNúmeros não salvos"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:paddingBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="7 dias grátis\nDepois R$ 9,90 / mês"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnSubscribe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Assinar Premium" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Call Blocker Premium"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:paddingBottom="16dp" />
+    <Button
+        android:id="@+id/btnWhatsappPremium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Falar no WhatsApp"
+        android:layout_marginTop="12dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="✔ Bloqueio total de chamadas\n✔ Somente números da sua agenda\n✔ Sem anúncios\n✔ Suporte prioritário"
-            android:textSize="16sp"
-            android:paddingBottom="20dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="💰 Plano mensal: R$ 9,90"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingBottom="24dp" />
-
-        <Button
-            android:id="@+id/btnSubscribe"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Assinar Premium" />
-
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Voltar"
-            android:layout_marginTop="12dp" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
