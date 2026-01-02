@@ -1,26 +1,32 @@
 package com.seupacote.callblocker.ui
 
+import android.Manifest
 import android.content.Intent
-import android.net.Uri
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.telecom.TelecomManager
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var txtStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            openAppPermissions()
-        }
+        txtStatus = findViewById(R.id.txtStatus)
 
-        findViewById<Button>(R.id.btnCallFilter).setOnClickListener {
-            openCallScreeningSettings()
+        findViewById<Button>(R.id.btnPermissions).setOnClickListener {
+            handlePermissionsFlow()
         }
 
         findViewById<Button>(R.id.btnAutostart).setOnClickListener {
@@ -31,47 +37,106 @@ class MainActivity : AppCompatActivity() {
             openBatterySettings()
         }
 
-        findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
-            openWhatsApp()
-        }
+        updateStatus()
     }
 
-    /** 🔐 Abre permissões do app (Android 9–15) */
-    private fun openAppPermissions() {
-        try {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.parse("package:$packageName")
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Não foi possível abrir permissões", Toast.LENGTH_SHORT).show()
+    private fun handlePermissionsFlow() {
+        // 1️⃣ CONTATOS
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                100
+            )
+            return
         }
+
+        // 2️⃣ TELEFONE
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_PHONE_STATE),
+                101
+            )
+            return
+        }
+
+        // 3️⃣ FILTRO DE CHAMADAS
+        openCallScreeningSettings()
     }
 
-    /** 📞 Abre tela correta para definir app como identificador/filtro de chamadas */
     private fun openCallScreeningSettings() {
         try {
-            val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-            startActivity(intent)
+            val telecomManager =
+                getSystemService(TELECOM_SERVICE) as TelecomManager
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                intent.putExtra(
+                    TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
+                    packageName
+                )
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Ative o filtro de chamadas nas configurações do sistema",
+                    Toast.LENGTH_LONG
+                ).show()
+                startActivity(Intent(Settings.ACTION_SETTINGS))
+            }
         } catch (e: Exception) {
-            Toast.makeText(this, "Abra Configurações > Apps padrão", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Não foi possível abrir o filtro de chamadas",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    /** ⚙️ Configurações gerais (autostart varia por fabricante) */
     private fun openGeneralSettings() {
         startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 
-    /** 🔋 Ignorar otimização de bateria */
     private fun openBatterySettings() {
         startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
-    /** 💬 WhatsApp suporte */
-    private fun openWhatsApp() {
-        val phone = "5547988818203"
-        val uri = Uri.parse("https://wa.me/$phone")
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
+    private fun updateStatus() {
+        val contactsGranted =
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED
+
+        val phoneGranted =
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED
+
+        txtStatus.text =
+            if (contactsGranted && phoneGranted) {
+                "Status: permissões concedidas"
+            } else {
+                "Status: permissões pendentes"
+            }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        updateStatus()
     }
 }
