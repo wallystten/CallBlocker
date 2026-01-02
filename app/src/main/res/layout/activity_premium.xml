@@ -3,56 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="#121212">
+    android:padding="24dp"
+    android:gravity="center">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⭐ Premium Call Blocker"
+        android:text="Plano Premium"
         android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:paddingBottom="12dp" />
+        android:paddingBottom="16dp" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🔒 Bloqueio total de chamadas desconhecidas\n📞 Sem anúncios\n🚀 Prioridade no suporte"
+        android:text="R$ 9,90 / mês\nBloqueio total de chamadas"
         android:textSize="16sp"
-        android:textColor="#DDDDDD"
-        android:paddingBottom="20dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="💰 Apenas R$ 9,90 por mês"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#A5D6A7"
-        android:gravity="center"
         android:paddingBottom="24dp" />
 
     <Button
-        android:id="@+id/btnAssinarPremium"
+        android:id="@+id/btnActivatePremium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Assinar Premium"
-        android:textAllCaps="false"
-        android:backgroundTint="#7E57C2"
-        android:textColor="#FFFFFF"
-        android:padding="14dp" />
-
-    <Button
-        android:id="@+id/btnVoltar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Voltar"
-        android:textAllCaps="false"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#424242"
-        android:textColor="#FFFFFF" />
+        android:text="Ativar Premium"
+        android:textAllCaps="false" />
 
 </LinearLayout>
- 
