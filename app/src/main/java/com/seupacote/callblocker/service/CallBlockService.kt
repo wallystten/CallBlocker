@@ -4,6 +4,7 @@ import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import com.seupacote.callblocker.util.TrialManager
+import com.seupacote.callblocker.util.PremiumManager
 
 class CallBlockService : CallScreeningService() {
 
@@ -11,22 +12,20 @@ class CallBlockService : CallScreeningService() {
 
         val number = callDetails.handle?.schemeSpecificPart
 
-        // 🔑 Verifica se o trial está ativo
+        val isPremium = PremiumManager.isPremiumActive(this)
         val isTrialActive = TrialManager.isTrialActive(this)
 
-        // ⛔ Trial expirado → não bloqueia nada
-        if (!isTrialActive) {
+        // ❌ Sem trial e sem premium → NÃO bloqueia
+        if (!isPremium && !isTrialActive) {
             respondToCall(callDetails, CallResponse.Builder().build())
             return
         }
 
-        // 🔍 Verifica se o número está salvo
         val isSavedContact = isNumberInContacts(number)
 
         val response = CallResponse.Builder()
 
         if (!isSavedContact) {
-            // 🔴 Bloqueia chamadas de números NÃO salvos
             response
                 .setDisallowCall(true)
                 .setRejectCall(true)
@@ -51,8 +50,8 @@ class CallBlockService : CallScreeningService() {
             null,
             null,
             null
-        )?.use { cursor ->
-            return cursor.moveToFirst()
+        )?.use {
+            return it.moveToFirst()
         }
 
         return false
