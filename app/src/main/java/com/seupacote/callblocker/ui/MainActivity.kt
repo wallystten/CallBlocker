@@ -8,106 +8,72 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.seupacote.callblocker.R
+import com.seupacote.callblocker.util.TrialManager
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var txtStatus: TextView
+    private lateinit var txtInfo: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         txtStatus = findViewById(R.id.txtStatus)
+        txtInfo = findViewById(R.id.txtInfo)
 
         findViewById<Button>(R.id.btnPermissions).setOnClickListener {
-            requestPermissionsFlow()
+            requestPermissions()
         }
 
         findViewById<Button>(R.id.btnBattery).setOnClickListener {
-            openBatterySettings()
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
         }
 
         findViewById<Button>(R.id.btnWhatsapp).setOnClickListener {
-            openWhatsApp()
+            val uri = Uri.parse("https://wa.me/5547988818203")
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
 
         updateStatus()
     }
 
-    private fun requestPermissionsFlow() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                100
-            )
-            return
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE
+        )
+
+        val missing = permissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_PHONE_STATE),
-                101
-            )
-            return
+        if (missing.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, missing.toTypedArray(), 100)
         }
-
-        showCallScreeningInstructions()
-    }
-
-    private fun showCallScreeningInstructions() {
-        Toast.makeText(
-            this,
-            "Agora ative manualmente o Call Blocker como app de triagem:\n" +
-                    "Configurações > Apps > Apps padrão > App de triagem de chamadas",
-            Toast.LENGTH_LONG
-        ).show()
-
-        startActivity(Intent(Settings.ACTION_SETTINGS))
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-    }
-
-    private fun openWhatsApp() {
-        val phone = "5547988818203"
-        val uri = Uri.parse("https://wa.me/$phone")
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
     private fun updateStatus() {
-        val contactsGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_CONTACTS
-            ) == PackageManager.PERMISSION_GRANTED
+        val trialActive = TrialManager.isTrialActive(this)
+        val daysLeft = TrialManager.getDaysLeft(this)
 
-        val phoneGranted =
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PackageManager.PERMISSION_GRANTED
+        txtStatus.text = if (trialActive) {
+            "🟢 Trial ativo: $daysLeft dia(s)\nBloqueio disponível"
+        } else {
+            "🔴 Trial expirado\nBloqueio desativado"
+        }
+    }
 
-        txtStatus.text =
-            if (contactsGranted && phoneGranted) {
-                "Permissões OK\nAtive o app como triagem nas configurações"
-            } else {
-                "Permissões pendentes"
-            }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        updateStatus()
     }
 }
